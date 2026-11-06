@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  x402-gateway:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: solana-x402-gateway
+    restart: always
+    ports:
+      - "8080:8080"
+    environment:
+      - PORT=8080
+      - SOLANA_RPC_URL=https://api.devnet.solana.com
+      - PROGRAM_ID=X402pAYwa1111111111111111111111111111111111
+      - MERCHANT_VAULT=4nd123456789ABCDEF123456789ABCDEF123456789A
+      - MERCHANT_AUTHORITY=6Lk123456789ABCDEF123456789ABCDEF123456789A
+      - ENTERPRISE_WEBHOOK_URL=https://hooks.slack.com/services/MOCK/PLACEHOLDER/0000000000
+    depends_on:
+      - redis-cache
+
+  redis-cache:
+    image: redis:7-alpine
+    container_name: x402-redis-cache
+    restart: always
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes
+    volumes:
+      - redis-data:/data
+
+volumes:
+  redis-data:

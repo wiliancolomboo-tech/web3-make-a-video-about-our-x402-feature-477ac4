@@ -1,0 +1,34 @@
+flowchart TD
+    %% Actors and Subsystems
+    UserAgent["Client / Agent (Browser or CLI)"]
+    ProxyGateway["x402 Reverse Proxy & Reverse Paywall Engine"]
+    SolanaRPC["Solana RPC / Geyser Node"]
+    AnchorProgram["x402 Anchor Program (Solana Cluster)"]
+    VideoPipeline["Programmatic Video Rendering Pipeline"]
+    EnterpriseWebhook["Enterprise Alert Service (Slack / Discord / Resend)"]
+
+    %% Step 1: Initial Unauthenticated Request
+    UserAgent -->|"1. GET /api/v1/video/explainer.mp4 (No Auth Header)"| ProxyGateway
+
+    %% Step 2: 402 Payment Challenge Generation
+    ProxyGateway -->|"2. Generate Nonce PDA & Challenge Hash"| ProxyGateway
+    ProxyGateway -->>|"3. HTTP 402 Payment Required\nHeaders: x402-challenge, x402-recipient, x402-amount"| UserAgent
+
+    %% Step 3: Transaction Formulation & Execution
+    UserAgent -->|"4. Build & Sign Solana Tx (settle_x402_payment)"| SolanaRPC
+    SolanaRPC -->|"5. Execute State Transition via Anchor CPI"| AnchorProgram
+    AnchorProgram -->|"6. Store Nonce PDA, Debit Buyer Lamports, Credit Merchant Vault"| AnchorProgram
+    AnchorProgram -->>|"7. Emit X402PaymentSettledEvent (Tx Signature)"| SolanaRPC
+
+    %% Step 4: Paywalled Resource Request with Proof
+    UserAgent -->|"8. GET /api/v1/video/explainer.mp4\nHeader: Authorization: x402 <TxSignature>:<Nonce>"| ProxyGateway
+
+    %% Step 5: Gateway Verification & Resource Delivery
+    ProxyGateway -->|"9. Query Commitment & Inspect Nonce State"| SolanaRPC
+    SolanaRPC -->>|"10. Confirmation Valid (Confirmed / Finalized)"| ProxyGateway
+    ProxyGateway -->|"11. Dispatch Video Assembly Task"| VideoPipeline
+    VideoPipeline -->>|"12. Rendered MP4 Frame Buffer (H.264 / AAC)"| ProxyGateway
+    ProxyGateway -->>|"13. HTTP 200 OK (Content-Type: video/mp4) Stream Payload"| UserAgent
+
+    %% Step 6: Enterprise Observability
+    ProxyGateway -->|"14. Push Telemetry & Settlement Notification"| EnterpriseWebhook

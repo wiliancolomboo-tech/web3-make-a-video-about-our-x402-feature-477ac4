@@ -1,0 +1,11 @@
++----------------------------------------------------------------------------------------------------+
+|                                    SOLANA x402 VALUE PROPOSITION                                   |
++-----------------------------------+--------------------------------+-------------------------------+
+| METRIC                            | WEB2 STRIPE / PAYPAL           | SOLANA x402 PROTOCOL          |
++-----------------------------------+--------------------------------+-------------------------------+
+| Cost Per Paywall Access           | $0.30 + 2.9% (Non-viable <$1)  | ~$0.00025 (Solana Base Fee)   |
+| Settlement Time                   | T+2 to T+7 Business Days       | ~400 Milliseconds (Finality)  |
+| Chargeback Risk                   | 1.5% - 3.0% Merchant Exposure  | 0.0% (Immutable On-Chain PDA) |
+| HTTP Standard Alignment           | Custom OAuth / Proprietary API | RFC 7231 / HTTP 402 Native    |
+| Programmatic Agent Interoperability| Broken by Captchas / 3D Secure | Machine-to-Machine Ed25519    |
++-----------------------------------+--------------------------------+-------------------------------+

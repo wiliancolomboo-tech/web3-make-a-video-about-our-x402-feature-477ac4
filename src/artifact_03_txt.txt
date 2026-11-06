@@ -1,0 +1,29 @@
+INTERNET (Public DMZ)
+  │
+  ├── [User Browser / Autonomous Agent]
+  │         │  (HTTP / x402 Protocol)
+  │         ▼
+  └── [NGINX / Envoy Ingress Load Balancer] (TLS 1.3 Termination)
+            │
+  INTERNAL SERVICE MESH (Private VPC)
+            │
+            ├── [x402 Middleware Reverse Proxy] (:8080)
+            │         │
+            │         ├── [Redis Ephemeral Nonce Cache] (:6379)
+            │         │
+            │         ├── [Remotion/FFmpeg Headless Video Core] (:5001)
+            │         │
+            │         └── [Enterprise Dispatcher]
+            │                   │
+            │                   ├──> Slack Webhooks (Real-Time Accounting)
+            │                   ├──> Discord Webhooks (Developer Community)
+            │                   └──> Resend SMTP (Transactional Invoices)
+            │
+  ON-CHAIN RUNTIME (Solana Devnet / Mainnet-Beta)
+            │
+            └── [Solana Validator RPC Cluster] (:8899)
+                      │
+                      └── [Anchor Program: x402_engine_core]
+                                ├── Merchant Registry PDA
+                                ├── Session Nonce PDA (Replay Guard)
+                                └── Settlement Escrow Vault
